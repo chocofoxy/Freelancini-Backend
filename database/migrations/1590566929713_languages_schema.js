@@ -9,8 +9,6 @@ class LanguagesSchema extends Schema {
       table.increments()
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('cascade')
       table.string('name')
-      table.integer('level')
-      table.string('type')
       table.timestamps()
     })
   }

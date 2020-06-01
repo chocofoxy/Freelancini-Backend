@@ -51,6 +51,10 @@ class User extends Model {
     return this.hasMany('App/Models/Language')
   }
 
+  static get hidden () {
+    return ['password','created_at','updated_at']
+  }
+/*
   async toJSON () {
     const address = await this.address().fetch()
     const freelance = await this.freelance().fetch()
@@ -69,7 +73,7 @@ class User extends Model {
       client: client
     }
   } 
-
+*/
 }
 
 module.exports = User

@@ -19,13 +19,16 @@ class FreelanceController {
           {
             const interview = new Interview()
             interview.fill(request.only(['lettre','price']))
+            interview.job().associate(job)
+            freelancer.proposals -= job.slots
+            freelancer.save()
             interview.freelancer().associate(freelancer)
             return { code : 200 , message : " interview submitted"}
           } else {
             return { code : 400 , message : " it's your job or you don't have enought propsals "}
           } 
        } catch (err) {
-          return err
+          return { code : 500 , message : "error"}
     }
   }
 
@@ -40,7 +43,25 @@ class FreelanceController {
             interview.delete()
             return { code : 200 , message : " interview deleted"}
           } else {
-            return { code : 400 , message : " it's not your interview or interview is status changed "}
+            return { code : 400 , message : " it's not your interview or interview's status changed "}
+          } 
+       } catch (err) {
+          return err
+    }
+  }
+
+  async endContract({ auth , params }) {
+    try { 
+          const user = await auth.getUser()
+          const freelancer = await user.freelance().fetch()
+          const interview = await Interview.findOrFail(params.id)
+          const interviewFreelancer = await interview.freelancer().fetch()
+          if ( freelancer.id == interviewFreelancer.id && interview.status == null )
+          {
+            interview.delete()
+            return { code : 200 , message : " interview deleted"}
+          } else {
+            return { code : 400 , message : " it's not your interview or interview's status changed "}
           } 
        } catch (err) {
           return err

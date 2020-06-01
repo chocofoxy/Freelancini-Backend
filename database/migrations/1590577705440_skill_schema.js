@@ -8,7 +8,7 @@ class SkillSchema extends Schema {
     this.create('skills', (table) => {
       table.increments()
       table.string('title')
-      table.string('cert_url')
+      table.integer('job_id').unsigned().references('id').inTable('jobs').onDelete('cascade')
       table.timestamps()
     })
   }

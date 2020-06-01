@@ -12,6 +12,14 @@ class Client extends Model {
     jobs () {
         return this.hasMany('App/Models/Job')
     }
+
+    contracts () {
+        return this.hasMany('App/Models/Contract')
+    }
+
+    user () {
+        return this.belongsTo('App/Models/User')
+    }
 }
 
 module.exports = Client

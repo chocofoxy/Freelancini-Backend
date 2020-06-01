@@ -13,6 +13,10 @@ class Freelancer extends Model {
     return this.hasMany('App/Models/Interview')
   }
 
+  contracts () {
+    return this.hasMany('App/Models/Contract')
+  }
+
   static get hidden () {
     return ['user_id','created_at','updated_at']
   }

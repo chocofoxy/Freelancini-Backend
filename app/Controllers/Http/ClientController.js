@@ -1,5 +1,7 @@
 'use strict'
 const Job = use('App/Models/Job')
+const Interview = use('App/Models/Interview')
+const Contract = use('App/Models/Contract')
 
 
 class ClientController {
@@ -38,59 +40,65 @@ class ClientController {
     async jobs ({  auth  }) {
         const user = await auth.getUser()
         const client = await user.client().fetch();
-        const jobs = await client.jobs().fetch();
+        //const jobs = await client.jobs().fetch();
+        const jobs = await Job.query().where('client_id','=',client.id).with('client.user').with('contract.freelancer.user').fetch()
         return jobs
     }
 
 
     async declineInterview ({ auth , params }) {
-        const job = new Job.find(params.id)
+        const interview = interview.find(params.id)
         const user = await auth.getUser()
-        
-        if ( job.client() == client && 'df' ) {
-            job.delete()
-            return  { code : 200 , message : " job has been deleted ! " }
+        const client = await user.client().fetch()
+        const jobClient = await interview.job().client().fetch()
+        if (jobClient.id == client.id ) {
+            interview.update({ status : false })
         } else {
-            return  { code : 400 , message : " somthing wrong !! " }
+            return { code : 403 , message: " it's not your job " }
         }
     }
 
-    async acceptInterview ({ request, response , auth , params }) {
-        const job = new Job.find(params.id)
+    async acceptInterview ({ auth , params }) {
+        const interview = interview.find(params.id)
         const user = await auth.getUser()
-
-        if ( job.client() == client && 'df' ) {
-            job.delete()
-            return  { code : 200 , message : " job has been deleted ! " }
+        const client = await user.client().fetch()
+        const jobClient = await interview.job().client().fetch()
+        if (jobClient.id == client.id ) {
+            interview.update({ status : true })
+            const contract = new Contract()
         } else {
-            return  { code : 400 , message : " somthing wrong !! " }
+            return { code : 403 , message: " it's not your job " }
         }
     }
 
-    async interviews ({ request, response , auth , params }) {
-        const job = new Job.find(params.id)
+    async hire ({ auth , params }) {
+        const interview = interview.find(params.id)
         const user = await auth.getUser()
-
-        if ( job.client() == client && 'df' ) {
-            job.delete()
-            return  { code : 200 , message : " job has been deleted ! " }
+        const client = await user.client().fetch()
+        const jobClient = await interview.job().client().fetch()
+        if (jobClient.id == client.id ) {
+            interview.update({ status : true })
+            const contract = new Contract()
         } else {
-            return  { code : 400 , message : " somthing wrong !! " }
+            return { code : 403 , message: " it's not your job " }
         }
+
     }
 
-    async endContract ({ request, response , auth , params }) {
-        const job = new Job.find(params.id)
+    async interviews ({  auth , params }) {
+        const job = await Job.find(params.id)
         const user = await auth.getUser()
-
-        if ( job.client() == client && 'df' ) {
-            job.delete()
-            return  { code : 200 , message : " job has been deleted ! " }
+        const client = await user.client().fetch()
+        const jobClient = await job.client().fetch()
+        const interviews = await job.interviews().fetch()
+        return interviews
+        /*
+        if (jobClient.id == client.id ) {
+            return interviews
         } else {
-            return  { code : 400 , message : " somthing wrong !! " }
-        }
+            return { code : 403 , message: " it's not your job " }
+        } */
     }
-
 
 }
 

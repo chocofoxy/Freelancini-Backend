@@ -21,25 +21,28 @@ class UserController {
       street: 'required',
       city : 'required',
       country : 'required',
-      //profile_pic : 'required'
+      //picture : 'required',
      }
      , formatters.JsonApi )
 
     if (!validation.fails()) {
-      /*
-      const profilePic = request.file('profile_pic', {
-        types: ['image'],
-        size: '2mb'
-      })
-    
-      await profilePic.move(Helpers.tmpPath('uploads'), {
-        name: 'custom-name.jpg',
-        overwrite: true
-      })*/
+
+      const profilePic = request.file('picture')
 
       const user = new User()
+      const name = Date.now() + '.jpg'
+      const path = Helpers.publicPath() + '/uploads/'
+
+      await profilePic.move( path , {
+        name: name ,
+        overwrite: true
+      })
+
       user.fill(request.only(['email','username','lastname','firstname', 'password']))
-      //user.picture = "uploads"
+      user.picture = '/uploads/' + name
+      const domain = request.input('domain') ? request.input('domain') : ""
+      user.domain = domain.toString()
+      user.skills = ""
       await user.client().save(new Client())
       const address = new Address() 
       address.fill(request.only(['street','city']))
@@ -82,7 +85,35 @@ class UserController {
   }
 
   async update ({ request, response , auth }) {
-    //return auth.getUser()
+
+      const user = await auth.getUser()
+
+      const profilePic = request.file('profile_pic', {
+        types: ['image'],
+        size: '2mb'
+      })
+
+      const name = Date.now() + '.jpg'
+      const path = Helpers.publicPath() + '/uploads/'
+
+      await profilePic.move( path , {
+        name: name ,
+        overwrite: true
+      })
+
+      user.fill(request.only(['email','username','lastname','firstname']))
+      user.picture = '/uploads/' + name
+      const domain = request.input('domain')
+
+      user.domain = domain.toString()
+
+      const address = user.address().update({ street : request.input('street') , city : request.input('city') })
+
+      await user.save()
+
+      return { code : 200 , mesaage : "dsffsdfsdf" }
+     
+
   }
 
   async destroy ({ request, response , auth }) {
@@ -111,7 +142,7 @@ class UserController {
     const user = await auth.getUser()
     user.role = !user.role
     await user.save()
-    response.json({ code : 200 , message: `role switched to ${ user.role ? 'client' : 'freelancer' }`})
+    response.json({ code : 200 , message: `role switched to ${ user.role ? 'client' : 'freelancer' }` , role : user.role })
   }
 
 }

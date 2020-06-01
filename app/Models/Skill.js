@@ -5,8 +5,8 @@ const Model = use('Model')
 
 class Skill extends Model {
 
-    certification () {
-        return this.hasOne('App/Models/Certification')
+    job () {
+        return this.belongsTo('App/Models/Job')
     }
 
     static get hidden () {

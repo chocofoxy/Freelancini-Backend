@@ -34,13 +34,14 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post('/submit/:id','FreelanceController.SubmitForJob')
+  Route.delete('/interview/:id','FreelanceController.deleteSubmition')
 }).prefix('freelance').middleware(['auth','freelance'])
 
 Route.group(() => {
   Route.post('/job','ClientController.addJob')
   Route.get('/jobs','ClientController.jobs')
   Route.delete('/job/:id','ClientController.deleteJob')
-
+  Route.get('/interviews/:id','ClientController.interviews')
 }).prefix('client').middleware(['auth','client'])
 
 Route.group(() => {

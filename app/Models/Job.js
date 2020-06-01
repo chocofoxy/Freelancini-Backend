@@ -13,9 +13,26 @@ class Job extends Model {
         return this.hasMany('App/Models/Interview')
     }
 
+    skills () {
+        return this.hasMany('App/Models/Skill')
+    }
+
+    contract () {
+        return this.hasOne('App/Models/Contract')
+    }
+
     static get hidden () {
         return ['client_id','created_at','updated_at']
       }
+    
+    async toJSON() {
+        const client = await this.client().fetch()
+        const user = await client.user().fetch()
+        return {
+            job : this ,
+            user : user
+        }
+    }
 }
 
 module.exports = Job
