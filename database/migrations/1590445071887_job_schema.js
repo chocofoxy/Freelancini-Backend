@@ -7,6 +7,12 @@ class JobSchema extends Schema {
   up () {
     this.create('jobs', (table) => {
       table.increments()
+      table.string('title').notNullable()
+      table.string('discription').notNullable()
+      table.integer('slots').notNullable()
+      table.float('price').notNullable()
+      table.integer('time').notNullable()
+      table.integer('client_id').unsigned().references('id').inTable('clients').onDelete('cascade')
       table.timestamps()
     })
   }

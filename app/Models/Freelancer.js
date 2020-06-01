@@ -9,6 +9,10 @@ class Freelancer extends Model {
     return this.belongsTo('App/Models/User')
   }
 
+  interviews () {
+    return this.hasMany('App/Models/Interview')
+  }
+
   static get hidden () {
     return ['user_id','created_at','updated_at']
   }

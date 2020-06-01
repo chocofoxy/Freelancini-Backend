@@ -8,6 +8,7 @@ class SkillSchema extends Schema {
     this.create('skills', (table) => {
       table.increments()
       table.string('title')
+      table.string('cert_url')
       table.timestamps()
     })
   }

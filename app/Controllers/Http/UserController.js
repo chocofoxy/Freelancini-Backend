@@ -6,6 +6,8 @@ const Client = use('App/Models/Client')
 const Country = use('App/Models/Country')
 const Address = use('App/Models/Address')
 const Language = use('App/Models/Language')
+const Helpers = use('Helpers')
+
 
 class UserController {
 
@@ -18,19 +20,33 @@ class UserController {
       password: 'required',
       street: 'required',
       city : 'required',
-      country : 'required'
+      country : 'required',
+      //profile_pic : 'required'
      }
      , formatters.JsonApi )
 
     if (!validation.fails()) {
+      /*
+      const profilePic = request.file('profile_pic', {
+        types: ['image'],
+        size: '2mb'
+      })
+    
+      await profilePic.move(Helpers.tmpPath('uploads'), {
+        name: 'custom-name.jpg',
+        overwrite: true
+      })*/
+
       const user = new User()
       user.fill(request.only(['email','username','lastname','firstname', 'password']))
+      //user.picture = "uploads"
       await user.client().save(new Client())
       const address = new Address() 
       address.fill(request.only(['street','city']))
       address.country().associate(await Country.find(request.input('country')))
       await user.address().save(address)
-      return await user.freelance().save(new Freelancer())
+      await user.freelance().save(new Freelancer())
+      return { code : 200 , mesaage : "dsffsdfsdf" }
      }
     else {
       return { error : { code : 400 , message: validation.messages()[0]['message'] }}
@@ -40,14 +56,23 @@ class UserController {
   async login ({ request , response , auth }) {
     const validation = await validate(request.all(),{ email: 'required|email' , password: 'required' })
     if (!validation.fails()) {
-      return await auth.attempt(request.input('email'),request.input('password'))
+      const token = await auth.attempt(request.input('email'),request.input('password'))
+      const user = await User.findBy({ email : request.input('email') })
+      token.role = user.role
+      return  token
+
     } else {
       return { error : { code : 400 , message: validation.messages()[0]['message'] }}
     }
   }
 
+  async getToken({ request, auth }) {
+    return await auth.listTokens()
+  }
+
   async logout ({ request , response , auth }) {
-    await auth.authenticator('jwt').revokeTokensForUser(await auth.getUser())
+    const user = await auth.getUser()
+    return await auth.authenticator('jwt').revokeTokens('')
   }
 
   async informations ({ request, response , auth }) {

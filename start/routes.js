@@ -19,7 +19,8 @@ const Route = use('Route')
 Route.group(() => {
   Route.post('/create','UserController.signup')
   Route.post('/login','UserController.login')
-}).prefix('account').middleware('guest')
+  Route.get('/token','UserController.getToken')
+}).prefix('account')
 
 Route.group(() => {
   Route.get('/logout','UserController.logout')
@@ -29,17 +30,21 @@ Route.group(() => {
   Route.delete('/delete','UserController.destroy')
   Route.post('/languges','UserController.addLanguge')
   Route.delete('/languges/:id','UserController.deleteLanguge')
-
 }).prefix('account').middleware('auth')
 
 Route.group(() => {
-  //Route.any('/submit','FreelanceController.SubmitForJob')
+  Route.post('/submit/:id','FreelanceController.SubmitForJob')
 }).prefix('freelance').middleware(['auth','freelance'])
 
 Route.group(() => {
-  //Route.any('/submit','FreelanceController.SubmitForJob')
+  Route.post('/job','ClientController.addJob')
+  Route.get('/jobs','ClientController.jobs')
+  Route.delete('/job/:id','ClientController.deleteJob')
+
 }).prefix('client').middleware(['auth','client'])
 
 Route.group(() => {
   Route.get('/countries','DetailController.countries')
+  Route.get('/jobs','DetailController.jobs')
+  Route.get('/job/:id','DetailController.job')
 }).prefix('details')

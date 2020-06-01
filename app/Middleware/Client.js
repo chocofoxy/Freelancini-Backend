@@ -9,10 +9,10 @@ class Client {
    * @param {Request} ctx.request
    * @param {Function} next
    */
-  async handle ({ request }, next) {
+  async handle ({ request , response , auth  }, next) {
     // call next to advance the request
     const user = await auth.getUser()
-    if ( user.role && user.freelance().setup  )
+    if ( user.role /*&& user.freelance().setup  */)
       await next()
     else if ( user.role )
       response.json({ error : 400 , message : 'setup your client profile'})
