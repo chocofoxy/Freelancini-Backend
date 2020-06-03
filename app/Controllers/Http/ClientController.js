@@ -9,7 +9,7 @@ class ClientController {
     async addJob ({ request, response , auth }) {
         try { 
             const job = new Job()
-            job.fill(request.only(['title','discription','slots','price', 'time']))
+            job.fill(request.only(['title','discription','slots','price', 'time',"skills"]))
             const user = await auth.getUser()
             const client = await user.client().fetch()
             job.client().associate(client)
@@ -90,15 +90,38 @@ class ClientController {
         const user = await auth.getUser()
         const client = await user.client().fetch()
         const jobClient = await job.client().fetch()
-        const interviews = await job.interviews().fetch()
-        return interviews
-        /*
+        const interviews = await job.interviews().with('freelancer.user').fetch()
         if (jobClient.id == client.id ) {
             return interviews
         } else {
             return { code : 403 , message: " it's not your job " }
-        } */
+        } 
     }
+
+    async interview ({  auth , params }) {
+        //const interview = await interview.find(params.id)
+        return await Interview.query().where('id','=',params.id).with('freelancer.user').with('job.client.user').fetch()
+        
+    }
+
+    async makeContract ({ request ,  auth }) {
+        const contract = new Contract()
+        await contract.save()
+        contract.merge(request.only(['starting_date','ending_date']))
+        const interview = await Interview.find(request.input('interview'))
+        contract.price = interview.price
+        contract.ended = false 
+        const freelancer = await interview.freelancer().fetch()
+        const job = await interview.job().fetch()
+        const client = await job.client().fetch()
+        contract.job().associate(job)
+        contract.freelancer().associate(freelancer)
+        contract.client().associate(client)
+        await contract.save()
+        return  { code :200 , message : "dqsdqsdqsd" }
+    }
+
+   
 
 }
 

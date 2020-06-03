@@ -30,11 +30,17 @@ Route.group(() => {
   Route.delete('/delete','UserController.destroy')
   Route.post('/languges','UserController.addLanguge')
   Route.delete('/languges/:id','UserController.deleteLanguge')
+  Route.put('/update/picture','UserController.updatePicture')
+  Route.get('/contracts','UserController.contracts')
+  Route.get('/contracts/accepted','UserController.acceptedContracts')
 }).prefix('account').middleware('auth')
 
 Route.group(() => {
   Route.post('/submit/:id','FreelanceController.SubmitForJob')
   Route.delete('/interview/:id','FreelanceController.deleteSubmition')
+  Route.get('/contracts','FreelanceController.contracts')
+  Route.get('/contract/:id','FreelanceController.contract')
+  Route.get('/contract/decline/:id','FreelanceController.declineContract')
 }).prefix('freelance').middleware(['auth','freelance'])
 
 Route.group(() => {
@@ -42,6 +48,8 @@ Route.group(() => {
   Route.get('/jobs','ClientController.jobs')
   Route.delete('/job/:id','ClientController.deleteJob')
   Route.get('/interviews/:id','ClientController.interviews')
+  Route.get('/interview/:id','ClientController.interview')
+  Route.post('/contract/create','ClientController.makeContract')
 }).prefix('client').middleware(['auth','client'])
 
 Route.group(() => {

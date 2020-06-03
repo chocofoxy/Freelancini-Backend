@@ -5,31 +5,34 @@ const User = use('App/Models/User')
 const Freelancer = use('App/Models/Freelancer')
 const Interview = use('App/Models/Interview')
 const Job = use('App/Models/Job')
-
+const Contract = use('App/Models/Contract')
 
 class FreelanceController {
 
   async SubmitForJob({ request , auth , params }) {
-    try { 
+   // try { 
           const user = await auth.getUser()
           const freelancer = await user.freelance().fetch()
           const job = await Job.findOrFail(params.id)
           const client = await job.client().fetch()
-          if ( freelancer.proposals > job.slots && user.id != client.id )
+          const x = await job.interviews().where('freelancer_id', '=' , freelancer.id ).getCount()
+          console.log(x);
+          
+          if ( freelancer.proposals > job.slots && freelancer.id != client.id  && x == 0 )
           {
             const interview = new Interview()
-            interview.fill(request.only(['lettre','price']))
+            interview.fill(request.only(['lettre','price','time']))
             interview.job().associate(job)
             freelancer.proposals -= job.slots
             freelancer.save()
             interview.freelancer().associate(freelancer)
             return { code : 200 , message : " interview submitted"}
           } else {
-            return { code : 400 , message : " it's your job or you don't have enought propsals "}
+            return { code : 400 , message : " it's your job , you don't have enought propsals or you already submitted"}
           } 
-       } catch (err) {
+    /*   } catch (err) {
           return { code : 500 , message : "error"}
-    }
+    }*/
   }
 
   async deleteSubmition({  auth , params }) {
@@ -69,7 +72,24 @@ class FreelanceController {
   }
 
 
+  async contract ({ auth , params }) {
+    const contract = await Contract.query().where('id','=',params.id).with('job').with('client.user').with('freelancer.user').fetch()
+    return contract
+  }
 
+  async acceptContract ({ auth , params }) {
+    const contract = await Contract.find(params.id)
+    contract.status = true ;
+    contract.save()
+    return contract
+  }
+
+  async declineContract ({ auth , params }) {
+    const contract = await Contract.find(params.id)
+    contract.status = false ;
+    contract.save()
+    return contract
+  }
 
 }
 

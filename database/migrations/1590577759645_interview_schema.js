@@ -9,6 +9,7 @@ class InterviewSchema extends Schema {
       table.increments()
       table.float('price')
       table.string('lettre')
+      table.integer('time')
       table.boolean('status').defaultTo(null)
       table.integer('job_id').unsigned().references('id').inTable('jobs').onDelete('cascade')
       table.integer('freelancer_id').unsigned().references('id').inTable('freelancers').onDelete('cascade')

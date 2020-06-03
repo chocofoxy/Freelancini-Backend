@@ -8,13 +8,14 @@ class Country extends Model {
     adresses() {
         return this.hasMany('App/Models/Adress')
     }
-
+    /*
     toJSON() {
         return {
+            id : this.id,
             name : this.name ,
             flag : this.flag
         }
-    }
+    }*/
 }
 
 module.exports = Country

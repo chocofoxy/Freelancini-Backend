@@ -22,9 +22,9 @@ class Job extends Model {
     }
 
     static get hidden () {
-        return ['client_id','created_at','updated_at']
+        return ['client_id','updated_at']
       }
-    
+    /*
     async toJSON() {
         const client = await this.client().fetch()
         const user = await client.user().fetch()
@@ -32,7 +32,7 @@ class Job extends Model {
             job : this ,
             user : user
         }
-    }
+    }*/
 }
 
 module.exports = Job

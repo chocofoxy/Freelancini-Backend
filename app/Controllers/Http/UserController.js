@@ -7,7 +7,7 @@ const Country = use('App/Models/Country')
 const Address = use('App/Models/Address')
 const Language = use('App/Models/Language')
 const Helpers = use('Helpers')
-
+const Contract = use('App/Models/Contract')
 
 class UserController {
 
@@ -87,35 +87,50 @@ class UserController {
   }
 
   async update ({ request, response , auth }) {
+    try
+     { const user = await auth.getUser()
 
-      const user = await auth.getUser()
+      user.merge(request.only(['email','lastname','firstname','domain','skills','lang','about']))
 
-      const profilePic = request.file('profile_pic', {
-        types: ['image'],
-        size: '2mb'
-      })
 
-      const name = Date.now() + '.jpg'
-      const path = Helpers.publicPath() + '/uploads/'
+      const address = await user.address().fetch() 
 
-      await profilePic.move( path , {
-        name: name ,
-        overwrite: true
-      })
+      await user.address().update({ street : request.input('street') , city : request.input('city')  , country_id : request.input('country') })
+      
 
-      user.fill(request.only(['email','username','lastname','firstname']))
-      user.picture = '/uploads/' + name
-      const domain = request.input('domain')
-
-      user.domain = domain.toString()
-
-      const address = user.address().update({ street : request.input('street') , city : request.input('city') })
 
       await user.save()
 
-      return { code : 200 , mesaage : "dsffsdfsdf" }
+      return { code : 200 , mesaage : "dsffsdfsdf" , user : user }
+    } catch(error) {
+
+      return   { code : 500 , mesaage : "ghgh" }
+    }
      
 
+  }
+
+  async updatePicture ({ request , auth }) {
+    try {
+        const user = await auth.getUser()
+        const profilePic = request.file('picture', {
+            types: ['image'],
+            size: '2mb'
+        })
+        const name = Date.now() + '.jpg'
+        const path = Helpers.publicPath() + '/uploads/'
+
+        await profilePic.move( path , {
+            name: name ,
+            overwrite: true
+        })
+        user.picture = '/uploads/' + name
+        await user.save()
+        return { code : 200 , message : " updated !! " , image : user.picture }
+    } catch (error) {
+        return { code : 500 , message : " error !! "}
+    }
+    
   }
 
   async destroy ({ request, response , auth }) {
@@ -146,6 +161,18 @@ class UserController {
     await user.save()
     response.json({ code : 200 , message: `role switched to ${ user.role ? 'client' : 'freelancer' }` , role : user.role })
   }
+
+  async contracts ({ auth }) {
+    const user = await auth.getUser()
+    return await User.query().where('id','=',user.id).with('freelance.contracts.job.client.user').fetch()
+  }
+
+ async acceptedContracts ({ auth }) {
+   const user = await auth.getUser()
+   const freelancer = await user.freelance().fetch()
+   return await Contract.query().where('freelancer_id','=',user.id).andWhere('status',true).with('job.client.user').fetch()
+}
+
 
 }
 

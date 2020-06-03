@@ -12,6 +12,7 @@ class JobSchema extends Schema {
       table.integer('slots').notNullable()
       table.float('price').notNullable()
       table.integer('time').notNullable()
+      table.string('skills').defaultTo("")
       table.integer('client_id').unsigned().references('id').inTable('clients').onDelete('cascade')
       table.timestamps()
     })
