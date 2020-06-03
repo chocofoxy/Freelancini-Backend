@@ -80,8 +80,10 @@ class UserController {
 
   async informations ({ request, response , auth }) {
     //return await auth.getUser()
-    const user = await auth.getUser()
-    return user.toJSON()
+    const user = await auth.getUser() 
+    const informations = await User.query().where('id', '=', user.id ).with('address.country').fetch()
+    return informations 
+    //return await user.informations()
   }
 
   async update ({ request, response , auth }) {

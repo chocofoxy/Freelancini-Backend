@@ -13,6 +13,11 @@ class Address extends Model {
         return this.belongsTo('App/Models/User')
     }
 
+    static get hidden () {
+        return ['user_id' ,'country_id','created_at','updated_at']
+      }
+
+    /*
     async toJSON () {
         const country = await this.country().fetch()
         return  {
@@ -20,7 +25,7 @@ class Address extends Model {
             city : this.city ,
             country : country
         }
-    }
+    }*/
     
 }
 

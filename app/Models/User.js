@@ -54,8 +54,8 @@ class User extends Model {
   static get hidden () {
     return ['password','created_at','updated_at']
   }
-/*
-  async toJSON () {
+
+  async informations () {
     const address = await this.address().fetch()
     const freelance = await this.freelance().fetch()
     const client = await this.client().fetch()
@@ -73,7 +73,7 @@ class User extends Model {
       client: client
     }
   } 
-*/
+
 }
 
 module.exports = User
