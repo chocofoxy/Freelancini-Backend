@@ -21,6 +21,7 @@ class FreelanceController {
           if ( freelancer.proposals > job.slots && freelancer.id != client.id  && x == 0 )
           {
             const interview = new Interview()
+            await interview.save()
             interview.fill(request.only(['lettre','price','time']))
             interview.job().associate(job)
             freelancer.proposals -= job.slots
