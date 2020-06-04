@@ -41,6 +41,7 @@ Route.group(() => {
   Route.get('/contracts','FreelanceController.contracts')
   Route.get('/contract/:id','FreelanceController.contract')
   Route.get('/contract/decline/:id','FreelanceController.declineContract')
+  Route.get('/contract/accepte/:id','FreelanceController.acceptContract')
 }).prefix('freelance').middleware(['auth','freelance'])
 
 Route.group(() => {
