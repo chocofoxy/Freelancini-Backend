@@ -27,7 +27,7 @@ class FreelanceController {
             freelancer.proposals -= job.slots
             freelancer.save()
             interview.freelancer().associate(freelancer)
-            interview.merge()
+            await interview.merge()
             return { code : 200 , message : " interview submitted"}
           } else {
             return { code : 400 , message : " it's your job , you don't have enought propsals or you already submitted"}
