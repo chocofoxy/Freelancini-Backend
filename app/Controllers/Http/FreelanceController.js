@@ -22,12 +22,12 @@ class FreelanceController {
           {
             const interview = new Interview()
             await interview.save()
-            interview.fill(request.only(['lettre','price','time']))
+            interview.merge(request.only(['lettre','price','time']))
             interview.job().associate(job)
             freelancer.proposals -= job.slots
             freelancer.save()
             interview.freelancer().associate(freelancer)
-            await interview.merge()
+            await interview.save()
             return { code : 200 , message : " interview submitted"}
           } else {
             return { code : 400 , message : " it's your job , you don't have enought propsals or you already submitted"}
